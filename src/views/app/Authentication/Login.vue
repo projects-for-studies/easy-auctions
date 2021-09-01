@@ -1,7 +1,11 @@
 <template>
-    <b-container class="h-100">
+  <b-container class="h-100">
       <div class="d-flex justify-content-center align-items-center h-100">
         <b-card>
+          <div v-if="errors.length > 0">
+            <b-alert show variant="danger" v-for="(err, index) in errors" :key="'err_'+index">{{ err }}</b-alert>
+          </div>
+          <img src="@/assets/img/logo_ea.png" style="width: 400px; height: 160px"/>
           <b-form @submit="onSubmit">
             <b-form-group
                 id="input-group-1"
@@ -45,8 +49,9 @@
 </template>
 
 <script>
-import { verifyAuthentication } from '../../../constants/index'
-export default {
+  import { mapState } from 'vuex'
+
+  export default {
   name: "Login",
   data() {
     return {
@@ -57,16 +62,16 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState({
+      errors: state => state.authentication.errors
+    })
+  },
   methods: {
     onSubmit(event) {
       event.preventDefault()
-      sessionStorage.setItem('current_user', JSON.stringify(this.form))
-      this.$router.push('/home')
-      console.log(JSON.stringify(this.form))
+      this.$store.dispatch('authentication/login', { email: this.form.email, password: this.form.password, session: this.$session, router: this.$router })
     }
-  },
-  mounted() {
-    verifyAuthentication()
   }
 }
 </script>

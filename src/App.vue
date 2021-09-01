@@ -4,15 +4,11 @@
   </div>
 </template>
 <script>
-export default {
-  beforeMount() {
-    if(JSON.parse(sessionStorage.getItem('current_user'))){
-      this.$router.push('/home')
-    }else{
-      this.$router.push('/entrar')
-    }
+  export default {
+    beforeCreate() {
+      this.$store.commit('authentication/SET_SESSION', this.$session.get('current_user'))
+    },
   }
-}
 </script>
 <style>
 html, body{

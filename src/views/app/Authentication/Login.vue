@@ -6,7 +6,7 @@
             <b-alert show variant="danger" v-for="(err, index) in errors" :key="'err_'+index">{{ err }}</b-alert>
           </div>
           <img src="@/assets/img/logo_ea.png" style="width: 400px; height: 160px"/>
-          <b-form @submit="onSubmit">
+          <b-form @submit.prevent="onSubmit">
             <b-form-group
                 id="input-group-1"
                 label="Email:"
@@ -37,12 +37,16 @@
                   id="checkboxes-4"
                   :aria-describedby="ariaDescribedby"
               >
-                <b-form-checkbox value="me">Lembrar-se de mim.</b-form-checkbox>
+                <b-form-checkbox value="me" button-variant="dark">Lembrar-se de mim.</b-form-checkbox>
               </b-form-checkbox-group>
             </b-form-group>
 
-            <b-button type="submit" variant="primary">Entrar</b-button>
+            <b-button block type="submit" variant="outline-dark">Entrar</b-button>
           </b-form>
+          <div class="d-flex justify-content-center align-items-center">
+            <br/><br/>
+            <b-button block type="button" variant="outline-secondary" href="/cadastrar">Cadastrar-se</b-button>
+          </div>
         </b-card>
       </div>
     </b-container>

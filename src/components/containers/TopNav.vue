@@ -1,7 +1,7 @@
 <template>
   <b-navbar toggleable="lg" type="dark" variant="dark">
     <b-navbar-brand href="#">
-      <img src="@/assets/img/logo_ea.png" style="width: 190px; height: 70px"/>
+      <img src="@/assets/img/logo_ea_dark.png" style="width: 190px; height: 70px"/>
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 

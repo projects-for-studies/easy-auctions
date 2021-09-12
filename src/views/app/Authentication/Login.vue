@@ -16,9 +16,14 @@
                   id="input-1"
                   v-model="form.email"
                   type="email"
+                  :state="valid_email"
+                  @blur="validFieldEmail"
+                  aria-describedby="input-email input-feedback-email"
                   placeholder="Digite seu email"
-                  required
               ></b-form-input>
+              <b-form-invalid-feedback id="input-feedback-name">
+                Digite seu email para prosseguir.
+              </b-form-invalid-feedback>
             </b-form-group>
 
             <b-form-group id="input-group-2" label="Sua senha:" label-for="input-2">
@@ -27,8 +32,13 @@
                   type="password"
                   v-model="form.password"
                   placeholder="***********"
-                  required
+                  :state="valid_password"
+                  @blur="validFieldPassowrd"
+                  aria-describedby="input-password input-feedback-password"
               ></b-form-input>
+              <b-form-invalid-feedback id="input-feedback-password">
+                Digite sua senha para prosseguir.
+              </b-form-invalid-feedback>
             </b-form-group>
 
             <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
@@ -59,6 +69,8 @@
   name: "Login",
   data() {
     return {
+      valid_password: null,
+      valid_email: null,
       form: {
         email: '',
         password: '',
@@ -71,11 +83,37 @@
       errors: state => state.authentication.errors
     })
   },
+  watch:{
+    email: function(){
+      if(this.valid_email == false) this.validFieldEmail()
+    },
+    password: function(){
+      if(this.valid_password == false) this.validFieldPassowrd()
+    }
+  },
   methods: {
     onSubmit(event) {
       event.preventDefault()
-      this.$store.dispatch('authentication/login', { email: this.form.email, password: this.form.password, session: this.$session, router: this.$router })
-    }
+      if(this.validAllFieldsBeforeSubmit()){
+        this.$store.dispatch('authentication/login', { email: this.form.email, password: this.form.password, session: this.$session, router: this.$router })
+      }
+    },
+    validFieldPassowrd(){
+      (this.form.password.length < 8) ? this.valid_password = false : this.valid_password = true
+    },
+    validFieldEmail(){
+      let email_valid = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+      (!email_valid.test(this.form.email)) ? this.valid_email = false : this.valid_email = true
+    },
+    validAllFieldsBeforeSubmit(){
+      this.validFieldEmail();
+      this.validFieldPassowrd();
+      if(this.valid_password && this.valid_email){
+        return true;
+      }else{
+        return false;
+      }
+    },
   }
 }
 </script>

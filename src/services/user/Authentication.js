@@ -1,7 +1,8 @@
 import {
   authenticationLogOut,
   authenticationLogIn,
-  authenticationRegisterUser
+  authenticationRegisterUser,
+  authenticationGetDataUser
 } from "../../constants";
 import axios from 'axios'
 
@@ -15,4 +16,8 @@ export const log_out = (config) => {
 
 export const register = (user) => {
   return axios.post(authenticationRegisterUser, user)
+}
+
+export const getDataUser = (data) => {
+  return axios.get(authenticationGetDataUser + data.id, { headers: { "token-type": "Bearer","access-token": data.config["access-token"], "expiry": data.config["expiry"], "uid": data.config["uid"], "client": data.config["client"]} })
 }

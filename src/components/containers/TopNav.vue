@@ -1,7 +1,7 @@
 <template>
-  <b-navbar toggleable="lg" type="dark" variant="dark">
-    <b-navbar-brand href="#">
-      <img src="@/assets/img/logo_ea_dark.png" style="width: 190px; height: 70px"/>
+  <b-navbar toggleable="lg" type="dark" variant="dark" id="header">
+    <b-navbar-brand to="/home">
+      <img src="@/assets/img/logo_dark.png" style="width: 190px; height: 70px"/>
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -9,10 +9,10 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown right>
           <template #button-content>
-            <em>{{ session.user.name }}</em>
+            <b-avatar size="2em" icon="people-fill"></b-avatar> <span style="margin-left: 5px;">{{ user.data.name }}</span>
           </template>
           <b-dropdown-item href="#">Configurações</b-dropdown-item>
-          <b-dropdown-item href="#" @click="goToMyAccount()">Minha conta</b-dropdown-item>
+          <b-dropdown-item to="/minha-conta">Minha conta</b-dropdown-item>
           <b-dropdown-item href="#" @click="logout()">Sair</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -25,24 +25,26 @@
 
   export default {
     name: "TopNav",
-    data(){
-      return{
-      }
-    },
+    data: () => ({}),
     computed: {
-      ...mapState('authentication', ['session'])
+      ...mapState({
+        session: state => state.authentication.session,
+        user: state => state.authentication.user,
+      })
     },
     methods:{
       logout(){
-        this.$store.dispatch('authentication/logout', {config: this.session.config, session: this.$session, router: this.$router })
-      },
-      goToMyAccount(){
-        this.$router.push('/minha-conta')
+        this.$store.dispatch('authentication/logout', { config: this.session.config, session: this.$session, router: this.$router})
       }
     }
   }
 </script>
 
 <style scoped>
-
+  #header{
+    flex: 0 1 auto;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+  }
 </style>

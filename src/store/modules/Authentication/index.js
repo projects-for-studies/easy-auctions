@@ -1,27 +1,59 @@
-import { log_out, log_in } from "../../../services/user/Authentication";
+import { log_out, log_in, getDataUser } from "../../../services/user/Authentication";
 
 export const Authentication = {
   state: () => ({
     session: {
       adress: undefined,
       user: undefined,
-      config: undefined
+      headers: undefined
     },
-    errors: []
+    user:{},
+    alert:{
+      id: '',
+      type: '',
+      message: '',
+      body_variant: '',
+      text_variant: '',
+      show: false,
+      blocked: false,
+      time: 5000,
+    }
   }),
   namespaced: true,
   actions: {
     login ({ commit }, data) {
       log_in(data.email, data.password)
-      .then(res => {
-        let session = { user: res.data.data, headers: res.headers }
-        data.session.set('current_user', JSON.stringify(session))
-        commit('SET_SESSION', JSON.stringify(session))
-        data.router.push('/home')
-      })
-      .catch(() => {
-        commit('SET_ERRORS', 'Credenciais de login inválidas.')
-      })
+        .then(res => {
+          let session = { user: res.data.data, headers: res.headers }
+          data.session.set('current_user', JSON.stringify(session))
+          commit('SET_SESSION', JSON.stringify(session))
+          commit('SET_ALERT', {
+            id: 'success_login',
+            type: 'success',
+            message: 'Login realizado com sucesso!',
+            body_variant: 'success',
+            text_variant: 'light',
+            show: true,
+            blocked: true,
+            redirect: true,
+            path: '/home',
+            time: 1000
+          })
+        })
+        .catch(() => {
+          commit('SET_ALERT', {
+            id: 'error_login',
+            type: 'error',
+            message: 'Ocorreu um erro, verifique seus dados e tente novamente.',
+            body_variant: 'danger',
+            text_variant: 'light',
+            show: true,
+            blocked: false,
+            redirect: false,
+            path: '',
+            time: 5000
+          })
+        })
     },
     logout ({ commit }, data) {
       log_out(data.config)
@@ -29,10 +61,47 @@ export const Authentication = {
           data.session.destroy()
           data.router.push('/entrar')
         })
-        .catch(err => {
-          console.log(err.response)
-          commit('SET_ERRORS', err.response.data.errors)
+        .catch(() => {
+          commit('SET_ALERT', {
+            id: 'error_logout',
+            type: 'error',
+            message: 'Ocorreu um erro ao tentar sair, por favor tente novamente.',
+            body_variant: 'danger',
+            text_variant: 'light',
+            show: true,
+            blocked: true,
+            redirect: false,
+            path: '',
+            time: 5000
+          })
         })
+    },
+    get_ser ({ commit }, data){
+      if(typeof (data) != "undefined"){
+        let session = JSON.parse(data)
+        let body = {
+          id: session.user.user.id,
+          config: session.headers,
+        }
+        getDataUser(body)
+          .then(res => {
+            commit('SET_USER', { info: res.data.user, address: res.data.address })
+          })
+          .catch(() => {
+            commit('SET_ALERT', {
+              id: 'error_get_user',
+              type: 'error',
+              message: 'Ocorreu um erro pegar suas informações, por favor tente novamente.',
+              body_variant: 'danger',
+              text_variant: 'light',
+              show: true,
+              blocked: true,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          })
+      }
     }
   },
   mutations: {
@@ -44,9 +113,12 @@ export const Authentication = {
         state.session.config = s.headers
       }
     },
-    SET_ERRORS (state, err){
-      state.errors = []
-      state.errors.push(err)
+    SET_ALERT (state, msg){
+      state.alert = msg
+    },
+    SET_USER (state, data){
+      state.user.data = data.info
+      state.user.address = data.address
     }
   },
   getters: {}

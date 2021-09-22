@@ -1,32 +1,40 @@
 <template>
-  <div>
-    <b-toast :id="id_msg" :variant="variant" toaster="b-toaster-top-center" solid>
-      <template #toast-title>
-        <div class="d-flex">
-          <strong class="mr-auto">{{ title }}</strong>
-        </div>
-      </template>
-      {{ msg }}
-    </b-toast>
-  </div>
+  <b-modal :id="data.id"
+     hide-footer hide-header no-close-on-esc :no-close-on-backdrop="data.blocked"
+     :body-bg-variant="data.body_variant"
+     :body-text-variant="data.text_variant">
+    <b-container fluid>
+      <span class="h6 text-center font-weight-bold">{{ data.message }}</span>
+    </b-container>
+  </b-modal>
 </template>
 
 <script>
 export default {
   name: "Messages",
   props: {
-    variant: {type: String, default: ''},
-    id_msg: { type: String, default: 'msg' },
-    title: { type: String, default: '' },
-    msg: { type: String, default: '' },
-    time: { type: String, default: "500" }
+    data:{
+      type: Object,
+      default: () => ({})
+    },
   },
-  created(){
-    this.$bvToast.show(this.id_msg)
-    setTimeout(() => {
-      this.$bvToast.hide(this.id_msg)
-    }, parseInt(this.time))
-  }
+  watch:{
+    data: function(a){
+      if(a.show === true){
+        setTimeout(() => {
+          this.$bvModal.show(a.id)
+          setTimeout(() => {
+            if(a.redirect === true){
+              this.$bvModal.hide(a.id)
+              this.$router.push(a.path)
+            }else{
+              this.$bvModal.hide(a.id)
+            }
+          }, a.time)
+        }, 10)
+      }
+    },
+  },
 }
 </script>
 

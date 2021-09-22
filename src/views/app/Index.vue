@@ -1,8 +1,8 @@
 <template>
-  <div id="app-container">
+  <div id="app-container" class="h-100">
     <top-nav/>
-    <main>
-      <div class="container-fluid">
+    <main class="vh-100">
+      <div class="container-fluid h-100">
         <router-view/>
       </div>
     </main>
@@ -23,3 +23,19 @@ export default {
   },
 }
 </script>
+
+<style>
+ main{
+   flex: 1 1 auto;
+ }
+ #app-container {
+   font-family: Avenir, Helvetica, Arial, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   text-align: center;
+   color: #2c3e50;
+   display: flex;
+   flex-flow: column;
+   height: 100%;
+ }
+</style>

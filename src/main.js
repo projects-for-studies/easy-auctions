@@ -6,7 +6,9 @@ import router from './router'
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import { BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
+import VueTheMask from 'vue-the-mask'
 
+Vue.use(VueTheMask)
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueSession)

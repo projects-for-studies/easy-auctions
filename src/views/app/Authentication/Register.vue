@@ -132,8 +132,8 @@
                       id="phone_1"
                       type="tel"
                       @blur="validFieldPhone1"
-                      v-mask="'(##) # ####-####'"
                       :state="valid_phone_1"
+                      v-mask="['(##) ####-####', '(##) # ####-####']"
                       aria-describedby="input-phone-1 input-feedback-phone-1"
                       v-model="phone1"
                   ></b-form-input>
@@ -148,8 +148,8 @@
                   <b-form-input
                       id="phone_2"
                       type="tel"
-                      v-mask="'(##) # ####-####'"
                       v-model="phone2"
+                      v-mask="['(##) ####-####', '(##) # ####-####']"
                   ></b-form-input>
                 </b-form-group>
               </b-col>
@@ -169,6 +169,7 @@
                   <b-form-input
                       id="zip_code"
                       v-model="zip_code"
+                      v-mask="'#####-###'"
                   ></b-form-input>
                 </b-form-group>
               </b-col>
@@ -267,12 +268,8 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import VueMask from 'v-mask'
   import { createAddress } from '../../../services/user/Address'
   import { register } from '../../../services/user/Authentication'
-
-  Vue.use(VueMask);
 
   export default {
     name: "Register",

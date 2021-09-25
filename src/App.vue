@@ -7,9 +7,6 @@
   export default {
     beforeCreate() {
       this.$store.commit('authentication/SET_SESSION', this.$session.get('current_user'))
-    },
-    beforeMount() {
-      this.$store.dispatch('authentication/get_ser', this.$session.get('current_user'))
     }
   }
 </script>

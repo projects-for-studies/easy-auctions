@@ -40,7 +40,7 @@
           </b-form>
           <div class="d-flex justify-content-center align-items-center">
             <br/><br/>
-            <b-button block type="button" variant="outline-secondary" href="/cadastrar">Cadastrar-se</b-button>
+            <b-button block type="button" variant="outline-secondary" to="/cadastrar">Cadastrar-se</b-button>
           </div>
         </b-card>
       </div>
@@ -50,6 +50,7 @@
 <script>
   import { mapState } from 'vuex'
   import Messages from "../../../components/Messages";
+  import { log_in } from "../../../services/user/Authentication";
 
   export default {
   name: "Login",
@@ -72,12 +73,39 @@
     onSubmit(event) {
       event.preventDefault()
       if(this.validAllFieldsBeforeSubmit()){
-        this.$store.dispatch('authentication/login', {
-          email: this.form.email,
-          password: this.form.password,
-          router: this.$router,
-          session: this.$session
-        });
+        log_in(this.form.email, this.form.password)
+        .then(res => {
+          let session = { user: res.data.data, headers: res.headers }
+          this.$session.set('current_user', JSON.stringify(session))
+          this.$store.commit('authentication/SET_SESSION', JSON.stringify(session))
+          this.$store.commit('authentication/SET_USER', session.user.user.name)
+          this.$store.commit('authentication/SET_ALERT', {
+            id: 'success_login',
+            type: 'success',
+            message: 'Login realizado com sucesso!',
+            body_variant: 'success',
+            text_variant: 'light',
+            show: true,
+            blocked: true,
+            redirect: true,
+            path: '/home',
+            time: 1000
+          })
+        })
+        .catch(() => {
+          this.$store.commit('authentication/SET_ALERT', {
+            id: 'error_login',
+            type: 'error',
+            message: 'Ocorreu um erro, verifique seus dados e tente novamente.',
+            body_variant: 'danger',
+            text_variant: 'light',
+            show: true,
+            blocked: false,
+            redirect: false,
+            path: '',
+            time: 5000
+          })
+        })
       }else{
         this.$store.commit('authentication/SET_ALERT', {
           id: 'error_login',

@@ -1,304 +1,457 @@
 <template>
   <div class="w-100 d-flex justify-content-center" id="container-myaccount">
-    <b-card class="text-left w-100">
-      <b-row>
-        <b-col sm="12">
+      <message-alert :data="alert"/>
+      <b-card class="text-left w-100">
+        <b-row>
+          <b-col sm="12">
           <span class="text-left d-flex align-items-end title-info">
             <b-icon icon="person-fill" class="h3"></b-icon>
             <b style="margin-left: 5px; cursor: default" class="h5">Meus dados</b>
             <span class="hr-vertical">|</span>
-            <span class="submenu-action" v-b-tooltip.hover title="Editar meus dados" @click="show_form_edit_user = !show_form_edit_user" v-if="!show_form_edit_user">
+            <span class="submenu-action" v-b-tooltip.hover title="Editar meus dados" @click="changeFormEditUser(false)" v-if="disabled_form_edit_user">
               <b-icon icon="pencil-square" class="h5"></b-icon>
               <span class="h6" style="margin-left: 5px">Editar</span>
             </span>
-            <span class="submenu-action" v-b-tooltip.hover title="Salvar alterações" v-if="show_form_edit_user">
+            <span class="submenu-action" v-b-tooltip.hover title="Salvar alterações" v-if="!disabled_form_edit_user">
               <b-icon icon="check-square-fill" class="h5"></b-icon>
               <span class="h6" style="margin-left: 5px" @click="updateUser">Salvar</span>
             </span>
-            <span class="hr-vertical" v-if="show_form_edit_user">|</span>
-            <span class="submenu-action" v-b-tooltip.hover title="Cancelar" v-if="show_form_edit_user" @click="show_form_edit_user = !show_form_edit_user">
+            <span class="hr-vertical" v-if="!disabled_form_edit_user">|</span>
+            <span class="submenu-action" v-b-tooltip.hover title="Cancelar" v-if="!disabled_form_edit_user" @click="changeFormEditUser(true)">
               <b-icon icon="x-square-fill" class="h5"></b-icon>
               <span class="h6" style="margin-left: 5px">Cancelar</span>
             </span>
           </span>
-        </b-col>
-      </b-row>
-      <b-row v-if="!show_form_edit_user">
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Nome:</span> {{ user.data.name }}
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Email:</span> {{ user.data.email }}
-          </div>
-        </b-col>
-        <br/><br/>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Sexo:</span> {{ user.data.gender }}
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Data de Nasc.:</span> {{ new Date(user.data.date_birth).toLocaleDateString() }}
-          </div>
-        </b-col>
-        <br/><br/>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Telefone - 1:</span> {{ user.data.telephone_1 }}
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Telefone - 2:</span> {{ user.data.telephone_2 }}
-          </div>
-        </b-col>
-      </b-row>
-      <b-row v-else>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Nome:*" label-for="name" style="margin-bottom: 0px">
-              <b-form-input id="name" size="sm" v-model="user.data.name" :state="valid_name"
-                            @blur="validFieldName"
-                            @input="validFieldName"
-                            aria-describedby="input-name input-feedback-name"
-                            trim
-              ></b-form-input>
-              <b-form-invalid-feedback id="input-name input-feedback-name">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Email:*" label-for="email" style="margin-bottom: 0px">
-              <b-form-input id="email" size="sm" v-model="user.data.email"
-                            type="email"
-                            :state="valid_email"
-                            @blur="validFieldEmail"
-                            @input="validFieldEmail"
-                            aria-describedby="input-email input-feedback-email"
-              ></b-form-input>
-              <b-form-invalid-feedback id="input-feedback-email">
-                Campo obrigatório, preencha por favor.
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Sexo:*" label-for="gender" style="margin-bottom: 0px">
-              <b-form-select id="gender" v-model="user.data.gender" :options="genderOptions" size="sm" :state="valid_gender"
-                             @change="validFieldGender"
-                             aria-describedby="input-gender input-feedback-gender"
-              ></b-form-select>
-              <b-form-invalid-feedback id="input-gender">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Data nasc.:*" label-class="font-weight-bold" label-for="date_birth" style="margin-bottom: 0px">
-              <b-form-datepicker id="date_birth" placeholder="Selecione" dark
-                                 :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                                 :max="minimum_age_allowed" size="sm"
-                                 :state="valid_date_birth"
-                                 @blur="validFieldDateBirth"
-                                 @input="validFieldDateBirth"
-                                 aria-describedby="input-date-birth input-feedback-date-birth"
-                                 locale="pt-BR" v-model="user.data.date_birth"></b-form-datepicker>
-              <b-form-invalid-feedback id="input-feedback-date-birth">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Telefone - 1:*" label-class="font-weight-bold" label-for="phone_1" style="margin-bottom: 0px">
-              <b-form-input id="phone_1" size="sm" v-model="user.data.telephone_1" @blur="validFieldPhone1" @input="validFieldPhone1"
-                            v-mask="'(##) # ####-####'"
-                            :state="valid_phone_1"
-                            aria-describedby="input-phone-1 input-feedback-phone-1"
-              ></b-form-input>
-              <b-form-invalid-feedback id="input-feedback-phone-1">Campo obrigatório, preencha por favor</b-form-invalid-feedback>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Telefone - 2:" label-class="font-weight-bold" label-for="phone_2" style="margin-bottom: 0px">
-              <b-form-input id="phone_2" size="sm" v-model="user.data.telephone_2" v-mask="'(##) # ####-####'" type="tel"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col sm="12">
-          <br/><br/>
-          <span class="text-left d-flex align-items-end title-info">
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Nome:*" label-for="name" style="margin-bottom: 0px">
+                <b-form-input id="name" size="sm" v-model="form.user.name" :state="valid_name"
+                              @blur="validFieldName"
+                              @input="validFieldName"
+                              :disabled="disabled_form_edit_user"
+                              aria-describedby="input-name input-feedback-name"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-name input-feedback-name">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Email:*" label-for="email" style="margin-bottom: 0px">
+                <b-form-input id="email" size="sm" v-model="form.user.email"
+                              type="email"
+                              :disabled="disabled_form_edit_user"
+                              :state="valid_email"
+                              @blur="validFieldEmail"
+                              @input="validFieldEmail"
+                              aria-describedby="input-email input-feedback-email"
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-feedback-email">
+                  Campo obrigatório, preencha por favor.
+                </b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Sexo:*" label-for="gender" style="margin-bottom: 0px">
+                <b-form-select id="gender" v-model="form.user.gender" :options="genderOptions" size="sm" :state="valid_gender"
+                               @change="validFieldGender" :disabled="disabled_form_edit_user"
+                               aria-describedby="input-gender input-feedback-gender"
+                ></b-form-select>
+                <b-form-invalid-feedback id="input-gender">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Data nasc.:*" label-class="font-weight-bold" label-for="date_birth" style="margin-bottom: 0px">
+                <b-form-datepicker id="date_birth" placeholder="Selecione" dark
+                                   :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                                   :max="minimum_age_allowed" size="sm"
+                                   :state="valid_date_birth" :disabled="disabled_form_edit_user"
+                                   @blur="validFieldDateBirth"
+                                   @input="validFieldDateBirth"
+                                   aria-describedby="input-date-birth input-feedback-date-birth"
+                                   locale="pt-BR" v-model="form.user.date_birth"></b-form-datepicker>
+                <b-form-invalid-feedback id="input-feedback-date-birth">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Telefone - 1:*" label-class="font-weight-bold" label-for="phone_1" style="margin-bottom: 0px">
+                <b-form-input id="phone_1" size="sm" v-model="form.user.telephone_1" @blur="validFieldPhone1" @input="validFieldPhone1"
+                              :state="valid_phone_1" :disabled="disabled_form_edit_user" v-mask="['(##) ####-####', '(##) # ####-####']"
+                              aria-describedby="input-phone-1 input-feedback-phone-1"
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-feedback-phone-1">Campo obrigatório, preencha por favor</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Telefone - 2:" label-class="font-weight-bold" label-for="phone_2" style="margin-bottom: 0px">
+                <b-form-input id="phone_2" size="sm" v-mask="['(##) ####-####', '(##) # ####-####']" v-model="form.user.telephone_2" :disabled="disabled_form_edit_user" type="tel"></b-form-input>
+              </b-form-group>
+            </div>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col sm="12">
+            <br/><br/>
+            <span class="text-left d-flex align-items-end title-info">
             <b-icon icon="house-door-fill" class="h3"></b-icon>
             <b style="margin-left: 5px; cursor: default" class="h5">Meu endereço</b>
             <span class="hr-vertical">|</span>
-            <span class="submenu-action" v-b-tooltip.hover title="Editar meu endereço" @click="show_form_edit_address = !show_form_edit_address" v-if="!show_form_edit_address">
+            <span class="submenu-action" v-b-tooltip.hover title="Editar meu endereço" @click="changeFormEditAddress(false)" v-if="disabled_form_edit_address">
               <b-icon icon="pencil-square" class="h5"></b-icon>
               <span class="h6" style="margin-left: 5px">Editar</span>
             </span>
-            <span class="submenu-action" v-b-tooltip.hover title="Salvar alterações" v-if="show_form_edit_address">
+            <span class="submenu-action" v-b-tooltip.hover title="Salvar alterações" v-if="!disabled_form_edit_address" @click="updateUserAddress">
               <b-icon icon="check-square-fill" class="h5"></b-icon>
               <span class="h6" style="margin-left: 5px">Salvar</span>
             </span>
-            <span class="hr-vertical" v-if="show_form_edit_address">|</span>
-            <span class="submenu-action" v-b-tooltip.hover title="Cancelar" v-if="show_form_edit_address" @click="show_form_edit_address = !show_form_edit_address">
+            <span class="hr-vertical" v-if="!disabled_form_edit_address">|</span>
+            <span class="submenu-action" v-b-tooltip.hover title="Cancelar" v-if="!disabled_form_edit_address" @click="changeFormEditAddress(true)">
               <b-icon icon="x-square-fill" class="h5"></b-icon>
               <span class="h6" style="margin-left: 5px">Cancelar</span>
             </span>
           </span>
-        </b-col>
-      </b-row>
-      <b-row v-if="!show_form_edit_address">
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Cidade:</span> {{ user.address.city }}
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Estado:</span> {{ user.address.state }}
-          </div>
-        </b-col>
-        <br/><br/>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Bairro:</span> {{ user.address.district }}
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Rua:</span> {{ user.address.street }}
-          </div>
-        </b-col>
-        <br/><br/>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">CEP:</span> {{ user.address.zip_code }}
-          </div>
-        </b-col>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Número:</span> {{ user.address.number }}
-          </div>
-        </b-col>
-        <br/><br/>
-        <b-col sm="6">
-          <div class="info-user">
-            <span class="font-weight-bold">Complemento:</span> {{ user.address.complement }}
-          </div>
-        </b-col>
-        <b-col sm="6">
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col sm="6" style="margin-bottom: 10px">
             <div class="info-user">
-              <span class="font-weight-bold">Referência:</span> {{ user.address.reference }}
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Cidade:*" label-for="city" style="margin-bottom: 0px">
+                <b-form-input id="city" size="sm" v-model="form.address.city" :disabled="disabled_form_edit_address"
+                              @blur="validFieldCity"
+                              @input="validFieldCity"
+                              :state="valid_city"
+                              aria-describedby="input-city input-feedback-city"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-city input-feedback-city">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
             </div>
           </b-col>
-      </b-row>
-      <b-row v-else>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Cidade:*" label-for="city" style="margin-bottom: 0px">
-              <b-form-input id="city" size="sm" v-model="user.address.city"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Estado:*" label-for="state" style="margin-bottom: 0px">
-              <b-form-input id="state" size="sm" v-model="user.address.state"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Bairro:*" label-for="district" style="margin-bottom: 0px">
-              <b-form-input id="district" size="sm" v-model="user.address.district"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Rua:*" label-for="street" style="margin-bottom: 0px">
-              <b-form-input id="street" size="sm" v-model="user.address.street"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="CEP:*" label-for="zip_code" style="margin-bottom: 0px">
-              <b-form-input id="zip_code" size="sm" v-model="user.address.zip_code" v-mask="'#####-###'"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Número:*" label-for="number" style="margin-bottom: 0px">
-              <b-form-input id="number" size="sm" v-model="user.address.number"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Complemento:" label-for="complement" style="margin-bottom: 0px">
-              <b-form-input id="complement" size="sm" v-model="user.address.complement"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-        <b-col sm="6" style="margin-bottom: 10px">
-          <div class="info-user">
-            <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Referência:" label-for="reference" style="margin-bottom: 0px">
-              <b-form-input id="reference" size="sm" v-model="user.address.reference"></b-form-input>
-            </b-form-group>
-          </div>
-        </b-col>
-      </b-row>
-    </b-card>
-  </div>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Estado:*" label-for="state" style="margin-bottom: 0px">
+                <b-form-input id="state" size="sm" v-model="form.address.state" :disabled="disabled_form_edit_address"
+                              @blur="validFieldState"
+                              @input="validFieldState"
+                              :state="valid_state"
+                              aria-describedby="input-state input-feedback-state"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-state input-feedback-state">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Bairro:*" label-for="district" style="margin-bottom: 0px">
+                <b-form-input id="district" size="sm" v-model="form.address.district" :disabled="disabled_form_edit_address"
+                              @blur="validFieldDistrict"
+                              @input="validFieldDistrict"
+                              :state="valid_district"
+                              aria-describedby="input-district input-feedback-district"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-district input-feedback-district">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Rua:*" label-for="street" style="margin-bottom: 0px">
+                <b-form-input id="street" size="sm" v-model="form.address.street" :disabled="disabled_form_edit_address"
+                              @blur="validFieldStreet"
+                              @input="validFieldStreet"
+                              :state="valid_street"
+                              aria-describedby="input-street input-feedback-street"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-street input-feedback-street">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="CEP:*" label-for="zip_code" style="margin-bottom: 0px">
+                <b-form-input id="zip_code" size="sm" v-model="form.address.zip_code" v-mask="'#####-###'" :disabled="disabled_form_edit_address"
+                              @blur="validFieldZipCode"
+                              @input="validFieldZipCode"
+                              :state="valid_zip_code"
+                              aria-describedby="input-zip-code input-feedback-zip-code"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-zip-code input-feedback-zip-code">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Número:*" label-for="number" style="margin-bottom: 0px">
+                <b-form-input id="number" size="sm" v-model="form.address.number" :disabled="disabled_form_edit_address"
+                              @blur="validFieldNumber"
+                              @input="validFieldNumber"
+                              :state="valid_number"
+                              aria-describedby="input-number input-feedback-number"
+                              trim
+                ></b-form-input>
+                <b-form-invalid-feedback id="input-number input-feedback-number">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Complemento:" label-for="complement" style="margin-bottom: 0px">
+                <b-form-input id="complement" size="sm" v-model="form.address.complement" :disabled="disabled_form_edit_address"></b-form-input>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col sm="6" style="margin-bottom: 10px">
+            <div class="info-user">
+              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Referência:" label-for="reference" style="margin-bottom: 0px">
+                <b-form-input id="reference" size="sm" v-model="form.address.reference" :disabled="disabled_form_edit_address"></b-form-input>
+              </b-form-group>
+            </div>
+          </b-col>
+        </b-row>
+      </b-card>
+    </div>
 </template>
 
 <script>
-  import Vue from 'vue'
   import { mapState } from 'vuex'
-  import VueMask from 'v-mask'
-
-  Vue.use(VueMask);
+  import { update, getDataUser } from "../../../services/user/Authentication";
+  import { updateAddress } from "../../../services/user/Address"
+  import Messages from "../../../components/Messages";
 
   export default {
     name: "Index",
     data: () => ({
+      show: false,
       msg: '',
       title_msg: '',
+      user_data: {
+        data: {},
+        address: {}
+      },
       variant_msg: '',
+      valid_city: null,
+      valid_state: null,
+      valid_district: null,
+      valid_street: null,
+      valid_zip_code: null,
+      valid_number: null,
       valid_name: null,
       valid_email: null,
       valid_date_birth: null,
       valid_phone_1: null,
       valid_gender: null,
-      show_form_edit_user: false,
-      show_form_edit_address: false,
+      disabled_form_edit_user: true,
+      disabled_form_edit_address: true,
       minimum_age_allowed: new Date(new Date().getYear() + 1882, 1, new Date().getDate()),
+      form:{
+        user:{
+          name: '',
+          email: '',
+          gender: '',
+          date_birth: null,
+          telephone_1: '',
+          telephone_2: '',
+        },
+        address:{
+          city: '',
+          state: '',
+          district: '',
+          street: '',
+          zip_code: '',
+          number: '',
+          complement: '',
+          reference: '',
+        }
+      },
       genderOptions: [
         { value: null, text: 'Por favor, selecione.' },
         { value: 'M', text: 'Masculino' },
         { value: 'F', text: 'Feminino' },
       ]
     }),
+    components:{
+      "message-alert": Messages
+    },
     computed: {
-      ...mapState({
-        user: state => state.authentication.user,
-      })
+      ...mapState('authentication',  [ 'session', 'user', 'alert' ]),
+    },
+    created() {
+      this.getUser()
     },
     methods:{
+      getUser(){
+        let body = {
+          id: this.session.user.id,
+          config: this.session.config,
+        }
+        getDataUser(body)
+        .then(res => {
+          this.$store.commit('authentication/SET_USER', res.data.user.name)
+          this.setDataInFields(res.data.user, res.data.address)
+          this.user_data.data = res.data.user
+          this.user_data.address = res.data.address
+        })
+        .catch(() => {
+          this.$store.commit('authentication/SET_ALERT', {
+            id: 'error_get_user',
+            type: 'error',
+            message: 'Ocorreu um erro pegar suas informações, por favor tente novamente.',
+            body_variant: 'danger',
+            text_variant: 'light',
+            show: true,
+            blocked: true,
+            redirect: false,
+            path: '',
+            time: 5000
+          })
+        })
+      },
+      setDataInFields(user, address){
+        this.form.user = user
+        this.form.address = address
+      },
+      changeFormEditUser(cancel){
+        this.disabled_form_edit_user = !this.disabled_form_edit_user
+        if(cancel) {
+          this.getUser()
+        }else{
+          this.setDataInFields(this.user_data.data, this.user_data.address)
+        }
+        this.valid_name = null
+        this.valid_email = null
+        this.valid_gender = null
+        this.valid_date_birth = null
+        this.valid_phone_1 = null
+      },
+      changeFormEditAddress(cancel){
+        this.disabled_form_edit_address = !this.disabled_form_edit_address
+        if(cancel) {
+          this.getUser()
+        }else{
+          this.setDataInFields(this.user_data.data, this.user_data.address)
+        }
+        this.valid_city = null
+        this.valid_state = null
+        this.valid_district = null
+        this.valid_street = null
+        this.valid_zip_code = null
+        this.valid_number = null
+      },
       updateUser(){
         if(this.validAllFieldsBeforeSubmit()){
-          console.log('Usuário atualizado!')
+          update({ id: this.session.user.id, body: this.form.user, config: this.session.config })
+          .then(res => {
+            if(res.data.status == 'success'){
+              this.getUser()
+              this.changeFormEditUser(false)
+              this.$store.commit('authentication/SET_USER', res.data.user.name)
+              this.$store.commit('authentication/SET_ALERT', {
+                  id: 'success_update_user',
+                  type: 'success',
+                  message: 'Informaçoes atualizadas com sucesso!',
+                  body_variant: 'success',
+                  text_variant: 'light',
+                  show: true,
+                  blocked: false,
+                  redirect: false,
+                  path: '',
+                  time: 5000
+                })
+            }else{
+              this.$store.commit('authentication/SET_ALERT', {
+                id: 'error_update_user',
+                type: 'error',
+                message: 'Ocorreu um erro ao tentar atualizar suas informaçoes, por favor tente novamente.',
+                body_variant: 'danger',
+                text_variant: 'light',
+                show: true,
+                blocked: false,
+                redirect: false,
+                path: '',
+                time: 5000
+              })
+            }
+          })
+          .catch(() => {
+            this.$store.commit('authentication/SET_ALERT', {
+              id: 'error_update_user',
+              type: 'error',
+              message: 'Ocorreu um erro ao tentar atualizar suas informaçoes, por favor tente novamente.',
+              body_variant: 'danger',
+              text_variant: 'light',
+              show: true,
+              blocked: false,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          })
+        }
+      },
+      updateUserAddress(){
+        if(this.validAllFieldsAddressBeforeSubmit()){
+          updateAddress({ id: this.session.user.id, address: this.form.address, config: this.session.config })
+          .then(res => {
+            if(res.data.status == 'success'){
+              this.getUser()
+              this.changeFormEditAddress(false)
+              this.$store.commit('authentication/SET_ALERT', {
+                id: 'success_update_address',
+                type: 'success',
+                message: 'Informaçoes de endereço atualizadas com sucesso!',
+                body_variant: 'success',
+                text_variant: 'light',
+                show: true,
+                blocked: false,
+                redirect: false,
+                path: '',
+                time: 5000
+              })
+            }else{
+              this.$store.commit('authentication/SET_ALERT', {
+                id: 'error_update_address',
+                type: 'error',
+                message: 'Ocorreu um erro ao tentar atualizar suas informaçoes de endereço, por favor tente novamente.',
+                body_variant: 'danger',
+                text_variant: 'light',
+                show: true,
+                blocked: false,
+                redirect: false,
+                path: '',
+                time: 5000
+              })
+            }
+          })
+          .catch(() => {
+            this.$store.commit('authentication/SET_ALERT', {
+              id: 'error_update_address',
+              type: 'error',
+              message: 'Ocorreu um erro ao tentar atualizar suas informaçoes de endereço, por favor tente novamente.',
+              body_variant: 'danger',
+              text_variant: 'light',
+              show: true,
+              blocked: false,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          })
         }
       },
       validAllFieldsBeforeSubmit(){
@@ -313,23 +466,58 @@
           return false;
         }
       },
+      validAllFieldsAddressBeforeSubmit(){
+        this.validFieldCity()
+        this.validFieldState()
+        this.validFieldStreet()
+        this.validFieldDistrict()
+        this.validFieldZipCode()
+        this.validFieldNumber()
+        if(this.valid_city && this.valid_state && this.valid_street && this.valid_district && this.valid_zip_code && this.valid_number){
+          return true;
+        }else{
+          return false;
+        }
+      },
       validFieldName(){
         let name_valid = new RegExp(/^[a-záàâãéèêíïóôõöúçñ ]+$/i);
-        (!name_valid.test(this.user.data.name) || this.user.data.name.trim().length < 10) ? this.valid_name = false : this.valid_name = true
+        (!name_valid.test(this.form.user.name) || this.form.user.name.trim().length < 10) ? this.valid_name = false : this.valid_name = true
       },
       validFieldEmail(){
         let email_valid = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-        (!email_valid.test(this.user.data.email)) ? this.valid_email = false : this.valid_email = true
+        (!email_valid.test(this.form.user.email)) ? this.valid_email = false : this.valid_email = true
       },
       validFieldGender(){
-        (this.user.data.gender == null) ? this.valid_gender = false : this.valid_gender = true
+        (this.form.user.gender == null) ? this.valid_gender = false : this.valid_gender = true
       },
       validFieldPhone1(){
-        (this.user.data.telephone_1.trim().length < 11) ? this.valid_phone_1 = false : this.valid_phone_1 = true
+        (this.form.user.telephone_1.trim().length < 11) ? this.valid_phone_1 = false : this.valid_phone_1 = true
       },
       validFieldDateBirth(){
-        (this.user.data.date_birth == null) ? this.valid_date_birth = false : this.valid_date_birth = true
-      }
+        (this.form.user.date_birth == null) ? this.valid_date_birth = false : this.valid_date_birth = true
+      },
+      validFieldCity(){
+        let city_valid = new RegExp(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0 123456789]+$/);
+        (!city_valid.test(this.form.address.city) || this.form.address.city.trim().length === 0) ? this.valid_city = false : this.valid_city = true
+      },
+      validFieldState(){
+        let state_valid = new RegExp(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0 123456789]+$/);
+        (!state_valid.test(this.form.address.state) || this.form.address.state.trim().length === 0) ? this.valid_state = false : this.valid_state = true
+      },
+      validFieldDistrict(){
+        let district_valid = new RegExp(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0 123456789]+$/);
+        (!district_valid.test(this.form.address.district) || this.form.address.district.trim().length === 0) ? this.valid_district = false : this.valid_district = true
+      },
+      validFieldZipCode(){
+        (this.form.address.zip_code.trim().length < 9) ? this.valid_zip_code = false : this.valid_zip_code = true
+      },
+      validFieldStreet(){
+        let street_valid = new RegExp(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0 123456789]+$/);
+        (!street_valid.test(this.form.address.street) || this.form.address.street.trim().length === 0) ? this.valid_street = false : this.valid_street = true
+      },
+      validFieldNumber(){
+        (this.form.address.number.trim().length == 0) ? this.valid_number = false : this.valid_number = true
+      },
     }
   }
 </script>

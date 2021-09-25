@@ -27,10 +27,7 @@
     name: "TopNav",
     data: () => ({}),
     computed: {
-      ...mapState({
-        session: state => state.authentication.session,
-        user: state => state.authentication.user,
-      })
+      ... mapState ( 'authentication' ,  [ 'session', 'user' ] ),
     },
     methods:{
       logout(){

@@ -33,7 +33,6 @@
                   id="checkboxes-4"
                   :aria-describedby="ariaDescribedby"
               >
-<!--                <b-form-checkbox value="me" button-variant="dark">Lembrar-se de mim.</b-form-checkbox>-->
               </b-form-checkbox-group>
             </b-form-group>
 
@@ -45,7 +44,7 @@
           </div>
         </b-card>
       </div>
-    </b-container>
+  </b-container>
 </template>
 
 <script>

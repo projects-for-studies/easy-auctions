@@ -27,6 +27,7 @@ export const Authentication = {
           let session = { user: res.data.data, headers: res.headers }
           data.session.set('current_user', JSON.stringify(session))
           commit('SET_SESSION', JSON.stringify(session))
+          commit('SET_USER', { info: session.user.user, address: session.user.adress })
           commit('SET_ALERT', {
             id: 'success_login',
             type: 'success',

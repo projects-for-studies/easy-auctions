@@ -8,13 +8,19 @@
     beforeCreate() {
       this.$store.commit('authentication/SET_SESSION', this.$session.get('current_user'))
     },
-    updated() { this.$store.dispatch('authentication/get_ser', this.$session.get('current_user')) },
-    created() { this.$store.dispatch('authentication/get_ser', this.$session.get('current_user')) }
+    beforeMount() {
+      this.$store.dispatch('authentication/get_ser', this.$session.get('current_user'))
+    }
   }
 </script>
 <style>
-html, body{
-  height: 100%;
-  overflow-x: hidden;
-}
+  html, body{
+    height: 100%;
+    overflow-x: hidden;
+  }
+  .dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #343a40 !important;
+  }
 </style>

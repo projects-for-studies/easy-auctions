@@ -1,7 +1,8 @@
 <template>
-  <b-container class="h-100">
-    <message-alert :data="alert"/>
-    <div class="d-flex justify-content-center align-items-center h-100">
+  <b-overlay :show="login_success" variant="dark" opacity="0.90" rounded="sm" class="h-100">
+    <b-container class="h-100">
+      <message-alert :data="alert"/>
+      <div class="d-flex justify-content-center align-items-center h-100">
         <b-card>
           <img src="@/assets/img/logo_ea.png" style="width: 400px; height: 160px"/>
           <b-form @submit.prevent="onSubmit">
@@ -44,7 +45,14 @@
           </div>
         </b-card>
       </div>
-  </b-container>
+    </b-container>
+    <template #overlay>
+      <div class="text-center text-light">
+        <b-icon icon="three-dots" animation="cylon" font-scale="4"></b-icon>
+        <p id="cancel-label">{{ msg_success_login }}</p>
+      </div>
+    </template>
+  </b-overlay>
 </template>
 
 <script>
@@ -58,6 +66,8 @@
     "message-alert": Messages
   },
   data: () => ({
+    login_success: false,
+    msg_success_login: "",
     form: {
       email: '',
       password: '',
@@ -75,24 +85,21 @@
       if(this.validAllFieldsBeforeSubmit()){
         log_in(this.form.email, this.form.password)
         .then(res => {
+          this.login_success = true
+          this.msg_success_login = "Login realizado com sucesso! Entrando no sistema."
           let session = { user: res.data.data, headers: res.headers }
           this.$session.set('current_user', JSON.stringify(session))
           this.$store.commit('authentication/SET_SESSION', JSON.stringify(session))
           this.$store.commit('authentication/SET_USER', session.user.user.name)
-          this.$store.commit('authentication/SET_ALERT', {
-            id: 'success_login',
-            type: 'success',
-            message: 'Login realizado com sucesso!',
-            body_variant: 'success',
-            text_variant: 'light',
-            show: true,
-            blocked: true,
-            redirect: true,
-            path: '/home',
-            time: 1000
-          })
+          setTimeout(() => {
+            this.login_success = false
+            this.msg_success_login = ""
+            this.$router.push('/home')
+          }, 1500)
         })
         .catch(() => {
+          this.login_success = false
+          this.msg_success_login = ""
           this.$store.commit('authentication/SET_ALERT', {
             id: 'error_login',
             type: 'error',
@@ -103,10 +110,12 @@
             blocked: false,
             redirect: false,
             path: '',
-            time: 5000
+            time: 3000
           })
         })
       }else{
+        this.login_success = false
+        this.msg_success_login = ""
         this.$store.commit('authentication/SET_ALERT', {
           id: 'error_login',
           type: 'error',

@@ -1,18 +1,7 @@
 <template>
   <b-container class="d-flex justify-content-center align-items-center h-100">
+    <confirmation :data="confirm"></confirmation>
     <div class="w-100">
-      <div class="d-flex justify-content-center">
-        <img src="@/assets/img/logo_ea.png" style="width: 300px; height: 130px"/>
-      </div>
-      <b-toast id="msg" :variant="variant_msg" toaster="b-toaster-top-center" solid no-auto-hide no-close-button>
-        <template #toast-title>
-          <div class="d-flex flex-grow-1 align-items-baseline">
-            <strong class="mr-auto">{{ title_msg }}</strong>
-            <b-icon icon="backspace-reverse-fill" @click="closeMsg" style="cursor:pointer"></b-icon>
-          </div>
-        </template>
-        {{ msg }}
-      </b-toast>
       <b-form @submit.prevent="registerUser">
         <p class="h5">(*) Campos obrigatórios.</p>
         <div class="d-flex justify-content-center h-100">
@@ -257,7 +246,11 @@
           </b-card>
         </div>
         <b-row>
-          <b-col sm="12">
+          <b-col sm="6">
+            <br/>
+            <b-button block type="button" variant="outline-secondary" to="/entrar">Voltar ao login</b-button>
+          </b-col>
+          <b-col sm="6">
             <br/>
             <b-button block type="submit" variant="outline-dark">Cadastrar-se</b-button>
           </b-col>
@@ -270,11 +263,16 @@
 <script>
   import { createAddress } from '../../../services/user/Address'
   import { register } from '../../../services/user/Authentication'
+  import Confirmation from "../../../components/Confirmation";
 
   export default {
     name: "Register",
+    components:{
+      'confirmation': Confirmation
+    },
     data() {
       return {
+        confirm:{},
         msg: '',
         title_msg: '',
         variant_msg: '',
@@ -333,12 +331,27 @@
       }
     },
     methods:{
-      closeMsg(){
-        this.$bvToast.hide('msg')
-        if(this.variant_msg == 'success') this.$router.push('/entrar')
-      },
       registerUser(){
         if(this.validAllFieldsBeforeSubmit()){
+          this.confirm = {
+            id: 'confirmation-register',
+            show: true,
+            bg_variant: '',
+            txt_variant: 'light',
+            body: '',
+            header:{
+              title: '',
+              close_header_action: () => {}
+            },
+            footer: {
+              ok: true,
+              ok_title: 'Ok',
+              ok_action: () => {},
+              cancel: false,
+              cancel_title: '',
+              cancel_action: () => {}
+            },
+          }
           let user = {
             "name": this.name,
             "gender": this.gender,
@@ -366,33 +379,52 @@
                 }
                 createAddress(address)
                 .then(() => {
-                  this.msg = 'Usuário cadastrado com sucesso!'
-                  this.variant_msg = 'success'
-                  this.title_msg = 'Cadastro de usuário.'
-                  this.$bvToast.show('msg')
-                  setTimeout(() => {
-                    this.$bvToast.hide('msg')
+                  this.confirm.header.title = 'Usuário cadastrado com sucesso'
+                  this.confirm.body = 'Foi disparado um email de confirmação de conta<br/> para o email cadastrado e será necessário confirmar a conta <br/> antes de realizar o login.'
+                  this.confirm.bg_variant = 'success'
+                  this.confirm.header.close_header_action = () => {
+                    this.$bvModal.hide('confirmation-register')
                     this.$router.push('/entrar')
-                  },5000)
+                  }
+                  this.confirm.footer.ok_action = () => {
+                    this.$bvModal.hide('confirmation-register')
+                    this.$router.push('/entrar')
+                  }
                 })
+              }else{
+                this.confirm.header.title = 'Usuário cadastrado com sucesso'
+                this.confirm.body = 'Foi disparado um email de confirmação de conta<br/> para o email cadastrado e será necessário confirmar a conta <br/> antes de realizar o login.'
+                this.confirm.bg_variant = 'success'
+                this.confirm.header.close_header_action = () => {
+                  this.$bvModal.hide('confirmation-register')
+                  this.$router.push('/entrar')
+                }
+                this.confirm.footer.ok_action = () => {
+                  this.$bvModal.hide('confirmation-register')
+                  this.$router.push('/entrar')
+                }
               }
             }else{
-              this.msg = 'Erro ao cadastrar usuário!'
-              this.variant_msg = 'danger'
-              this.title_msg = 'Cadastro de usuário.'
-              this.$bvToast.show('msg')
-              setTimeout(() => {
-                this.$bvToast.hide('msg')
-              },5000)
+              this.confirm.header.title = 'Cadastro de usuário'
+              this.confirm.body = 'Ocorreu um erro ao tentar realizar seu cadastro.<br/> Por favor, tente novamente.'
+              this.confirm.bg_variant = 'danger'
+              this.confirm.header.close_header_action = () => {
+                this.$bvModal.hide('confirmation-register')
+              }
+              this.confirm.footer.ok_action = () => {
+                this.$bvModal.hide('confirmation-register')
+              }
             }
           }).catch(() => {
-            this.msg = 'Erro ao cadastrar usuário!'
-            this.variant_msg = 'danger'
-            this.title_msg = 'Cadastro de usuário.'
-            this.$bvToast.show('msg')
-            setTimeout(() => {
-              this.$bvToast.hide('msg')
-            },5000)
+            this.confirm.header.title = 'Cadastro de usuário'
+            this.confirm.body = 'Ocorreu um erro ao tentar realizar seu cadastro.<br/> Por favor, tente novamente.'
+            this.confirm.bg_variant = 'danger'
+            this.confirm.header.close_header_action = () => {
+              this.$bvModal.hide('confirmation-register')
+            }
+            this.confirm.footer.ok_action = () => {
+              this.$bvModal.hide('confirmation-register')
+            }
           })
         }
       },

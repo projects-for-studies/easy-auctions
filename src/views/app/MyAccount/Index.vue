@@ -108,9 +108,9 @@
             <b-icon icon="house-door-fill" class="h3"></b-icon>
             <b style="margin-left: 5px; cursor: default" class="h5">Meu endereço</b>
             <span class="hr-vertical">|</span>
-            <span class="submenu-action" v-b-tooltip.hover title="Editar meu endereço" @click="changeFormEditAddress(false)" v-if="disabled_form_edit_address">
+            <span class="submenu-action" v-b-tooltip.hover :title="user_has_address == true ? 'Editar meu endereço' : 'Adicionar meu endereço'" @click="changeFormEditAddress(false)" v-if="disabled_form_edit_address">
               <b-icon icon="pencil-square" class="h5"></b-icon>
-              <span class="h6" style="margin-left: 5px">Editar</span>
+              <span class="h6" style="margin-left: 5px">{{ user_has_address == true ? 'Editar' : 'Adicionar' }}</span>
             </span>
             <span class="submenu-action" v-b-tooltip.hover title="Salvar alterações" v-if="!disabled_form_edit_address" @click="updateUserAddress">
               <b-icon icon="check-square-fill" class="h5"></b-icon>
@@ -237,6 +237,7 @@
   export default {
     name: "Index",
     data: () => ({
+      user_has_address: null,
       show: false,
       msg: '',
       title_msg: '',
@@ -289,7 +290,7 @@
       "message-alert": Messages
     },
     computed: {
-      ...mapState('authentication',  [ 'session', 'user', 'alert' ]),
+      ...mapState('authentication',  [ 'session', 'alert' ]),
     },
     created() {
       this.getUser()
@@ -324,7 +325,12 @@
       },
       setDataInFields(user, address){
         this.form.user = user
-        this.form.address = address
+        this.form.address = address == null ? {city: '', state: '', district: '', street: '', zip_code: '', number: '', complement: '', reference: ''} : address
+        if(address == null){
+          this.user_has_address = null
+        }else{
+          this.user_has_address = true
+        }
       },
       changeFormEditUser(cancel){
         this.disabled_form_edit_user = !this.disabled_form_edit_user

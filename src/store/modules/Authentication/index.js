@@ -6,6 +6,7 @@ export const Authentication = {
       headers: undefined
     },
     user: '',
+    picture_current_user: 'profile_picture_default.jpg',
     alert:{
       id: '',
       type: '',
@@ -33,6 +34,9 @@ export const Authentication = {
     },
     SET_USER (state, name){
       state.user = name
+    },
+    SET_PROFILE_PICTURE(state, picture){
+      state.picture_current_user = picture
     }
   },
   getters: {}

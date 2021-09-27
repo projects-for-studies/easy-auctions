@@ -1,6 +1,6 @@
 <template>
   <b-container class="d-flex justify-content-center align-items-center h-100">
-    <confirmation :data="confirm"></confirmation>
+    <alert :data="confirm"></alert>
     <div class="w-100">
       <b-form @submit.prevent="registerUser">
         <p class="h5">(*) Campos obrigatórios.</p>
@@ -263,12 +263,12 @@
 <script>
   import { createAddress } from '../../../services/user/Address'
   import { register } from '../../../services/user/Authentication'
-  import Confirmation from "../../../components/Confirmation";
+  import Alert from "../../../components/Alert";
 
   export default {
     name: "Register",
     components:{
-      'confirmation': Confirmation
+      'alert': Alert
     },
     data() {
       return {
@@ -390,6 +390,9 @@
                     this.$bvModal.hide('confirmation-register')
                     this.$router.push('/entrar')
                   }
+                  setTimeout(() => {
+                    this.$bvModal.show('confirmation-register')
+                  }, 100)
                 })
               }else{
                 this.confirm.header.title = 'Usuário cadastrado com sucesso'
@@ -403,6 +406,9 @@
                   this.$bvModal.hide('confirmation-register')
                   this.$router.push('/entrar')
                 }
+                setTimeout(() => {
+                  this.$bvModal.show('confirmation-register')
+                }, 100)
               }
             }else{
               this.confirm.header.title = 'Cadastro de usuário'
@@ -414,6 +420,9 @@
               this.confirm.footer.ok_action = () => {
                 this.$bvModal.hide('confirmation-register')
               }
+              setTimeout(() => {
+                this.$bvModal.show('confirmation-register')
+              }, 100)
             }
           }).catch(() => {
             this.confirm.header.title = 'Cadastro de usuário'
@@ -425,6 +434,9 @@
             this.confirm.footer.ok_action = () => {
               this.$bvModal.hide('confirmation-register')
             }
+            setTimeout(() => {
+              this.$bvModal.show('confirmation-register')
+            }, 100)
           })
         }
       },

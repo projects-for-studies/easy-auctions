@@ -1,10 +1,10 @@
 <template>
-  <b-modal header-bg-variant="light"
-           header-text-variant="dark"
-           footer-bg-variant="light"
-           footer-text-variant="dark"
-           body-bg-variant="light"
-           body-text-variant="dark"
+  <b-modal :header-bg-variant="data.bg_variant"
+           :header-text-variant="data.txt_variant"
+           :footer-bg-variant="data.bg_variant"
+           :footer-text-variant="data.txt_variant"
+           :body-bg-variant="data.bg_variant"
+           :body-text-variant="data.txt_variant"
            no-close-on-esc
            no-close-on-backdrop
            :id="data.id"
@@ -13,7 +13,7 @@
       <span>{{ data.header.title }}</span>
       <span class="float-right" style="cursor: pointer" @click="data.header.close_header_action">&#9746;</span>
     </template>
-    <span v-html="data.body">
+      <span v-html="data.body">
       </span>
     <template #modal-footer>
       <div class="w-100 d-flex justify-content-end">
@@ -29,15 +29,15 @@
 </template>
 
 <script>
-export default {
-  name: "Confirmation",
-  props: {
-    data:{
-      type: Object,
-      default: () => ({})
-    },
+  export default {
+    name: "Alert",
+    props: {
+      data:{
+        type: Object,
+        default: () => ({})
+      },
+    }
   }
-}
 </script>
 
 <style scoped>

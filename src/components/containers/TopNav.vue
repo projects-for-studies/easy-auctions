@@ -9,7 +9,7 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown right>
           <template #button-content>
-            <b-avatar size="2em" icon="people-fill"></b-avatar> <span style="margin-left: 5px;">{{ user }}</span>
+            <b-avatar variant="dark" :src="`${baseUrlPicture}/${picture_current_user}`" class="mr-3"></b-avatar> <span style="margin-left: 5px;">{{ formatName(user) }}</span>
           </template>
           <b-dropdown-item href="#">Configurações</b-dropdown-item>
           <b-dropdown-item to="/minha-conta">Minha conta</b-dropdown-item>
@@ -21,14 +21,17 @@
 </template>
 
 <script>
+  import { baseProfilePicture } from "../../constants";
   import { mapState } from "vuex";
   import { log_out } from "../../services/user/Authentication";
 
   export default {
     name: "TopNav",
-    data: () => ({}),
+    data: () => ({
+      baseUrlPicture: baseProfilePicture
+    }),
     computed: {
-      ...mapState('authentication',  [ 'session', 'user' ]),
+      ...mapState('authentication',  [ 'session', 'user', 'picture_current_user' ]),
     },
     methods:{
       logout(){
@@ -51,6 +54,17 @@
             time: 5000
           })
         })
+      },
+      formatName(name){
+        let n = name.split(" ")
+        let pen = n[n.length - 2]
+        let pre = ["de", "do", "da", "dos", "das"]
+
+        if(pre.indexOf(pen) != -1){
+          return `${n[0]} ${pen} ${n[n.length - 1]}`
+        }else{
+          return `${n[0]} ${n[n.length - 1]}`
+        }
       }
     }
   }

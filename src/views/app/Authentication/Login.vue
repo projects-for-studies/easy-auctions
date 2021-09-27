@@ -91,6 +91,7 @@
           this.$session.set('current_user', JSON.stringify(session))
           this.$store.commit('authentication/SET_SESSION', JSON.stringify(session))
           this.$store.commit('authentication/SET_USER', session.user.user.name)
+          this.$store.commit('authentication/SET_PROFILE_PICTURE', session.user.user.photo)
           setTimeout(() => {
             this.login_success = false
             this.msg_success_login = ""

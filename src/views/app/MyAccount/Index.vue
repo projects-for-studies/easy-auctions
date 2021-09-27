@@ -1,6 +1,7 @@
 <template>
   <div class="w-100 d-flex justify-content-center" id="container-myaccount">
       <message-alert :data="alert"/>
+      <confirmation :data="confirm"/>
       <b-card class="text-left w-100">
         <b-row>
           <b-col sm="12">
@@ -25,79 +26,111 @@
           </b-col>
         </b-row>
         <b-row>
-          <b-col sm="6" style="margin-bottom: 10px">
-            <div class="info-user">
-              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Nome:*" label-for="name" style="margin-bottom: 0px">
-                <b-form-input id="name" size="sm" v-model="form.user.name" :state="valid_name"
-                              @blur="validFieldName"
-                              @input="validFieldName"
-                              :disabled="disabled_form_edit_user"
-                              aria-describedby="input-name input-feedback-name"
-                              trim
-                ></b-form-input>
-                <b-form-invalid-feedback id="input-name input-feedback-name">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
-              </b-form-group>
-            </div>
+          <b-col sm="10">
+            <b-row>
+              <b-col sm="6" style="margin-bottom: 10px">
+                <div class="info-user">
+                  <b-form-group label-cols="3" label-size="sm" label-class="font-weight-bold" label="Nome:*" label-for="name" style="margin-bottom: 0px">
+                    <b-form-input id="name" size="sm" v-model="form.user.name" :state="valid_name"
+                                  @blur="validFieldName"
+                                  @input="validFieldName"
+                                  :disabled="disabled_form_edit_user"
+                                  aria-describedby="input-name input-feedback-name"
+                                  trim
+                    ></b-form-input>
+                    <b-form-invalid-feedback id="input-name input-feedback-name">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+                  </b-form-group>
+                </div>
+              </b-col>
+              <b-col sm="6" style="margin-bottom: 10px">
+                <div class="info-user">
+                  <b-form-group label-cols="3" label-class="font-weight-bold" label-size="sm" label="Email:*" label-for="email" style="margin-bottom: 0px">
+                    <b-form-input id="email" size="sm" v-model="form.user.email"
+                                  type="email"
+                                  :disabled="disabled_form_edit_user"
+                                  :state="valid_email"
+                                  @blur="validFieldEmail"
+                                  @input="validFieldEmail"
+                                  aria-describedby="input-email input-feedback-email"
+                    ></b-form-input>
+                    <b-form-invalid-feedback id="input-feedback-email">
+                      Campo obrigatório, preencha por favor.
+                    </b-form-invalid-feedback>
+                  </b-form-group>
+                </div>
+              </b-col>
+              <b-col sm="6" style="margin-bottom: 10px">
+                <div class="info-user">
+                  <b-form-group label-cols="3" label-size="sm" label-class="font-weight-bold" label="Sexo:*" label-for="gender" style="margin-bottom: 0px">
+                    <b-form-select id="gender" v-model="form.user.gender" :options="genderOptions" size="sm" :state="valid_gender"
+                                   @change="validFieldGender" :disabled="disabled_form_edit_user"
+                                   aria-describedby="input-gender input-feedback-gender"
+                    ></b-form-select>
+                    <b-form-invalid-feedback id="input-gender">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+                  </b-form-group>
+                </div>
+              </b-col>
+              <b-col sm="6" style="margin-bottom: 10px">
+                <div class="info-user">
+                  <b-form-group label-cols="3" label-size="sm" label="Data nasc.:*" label-class="font-weight-bold" label-for="date_birth" style="margin-bottom: 0px">
+                    <b-form-datepicker id="date_birth" placeholder="Selecione" dark
+                                       :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                                       :max="minimum_age_allowed" size="sm"
+                                       :state="valid_date_birth" :disabled="disabled_form_edit_user"
+                                       @blur="validFieldDateBirth"
+                                       @input="validFieldDateBirth"
+                                       aria-describedby="input-date-birth input-feedback-date-birth"
+                                       locale="pt-BR" v-model="form.user.date_birth"></b-form-datepicker>
+                    <b-form-invalid-feedback id="input-feedback-date-birth">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
+                  </b-form-group>
+                </div>
+              </b-col>
+              <b-col sm="6">
+                <div class="info-user">
+                  <b-form-group label-cols="3" label-size="sm" label="Telefone - 1:*" label-class="font-weight-bold" label-for="phone_1" style="margin-bottom: 0px">
+                    <b-form-input id="phone_1" size="sm" v-model="form.user.telephone_1" @blur="validFieldPhone1" @input="validFieldPhone1"
+                                  :state="valid_phone_1" :disabled="disabled_form_edit_user" v-mask="['(##) ####-####', '(##) # ####-####']"
+                                  aria-describedby="input-phone-1 input-feedback-phone-1"
+                    ></b-form-input>
+                    <b-form-invalid-feedback id="input-feedback-phone-1">Campo obrigatório, preencha por favor</b-form-invalid-feedback>
+                  </b-form-group>
+                </div>
+              </b-col>
+              <b-col sm="6">
+                <div class="info-user">
+                  <b-form-group label-cols="3" label-size="sm" label="Telefone - 2:" label-class="font-weight-bold" label-for="phone_2" style="margin-bottom: 0px">
+                    <b-form-input id="phone_2" size="sm" v-mask="['(##) ####-####', '(##) # ####-####']" v-model="form.user.telephone_2" :disabled="disabled_form_edit_user" type="tel"></b-form-input>
+                  </b-form-group>
+                </div>
+              </b-col>
+            </b-row>
           </b-col>
-          <b-col sm="6" style="margin-bottom: 10px">
-            <div class="info-user">
-              <b-form-group label-cols="2" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Email:*" label-for="email" style="margin-bottom: 0px">
-                <b-form-input id="email" size="sm" v-model="form.user.email"
-                              type="email"
-                              :disabled="disabled_form_edit_user"
-                              :state="valid_email"
-                              @blur="validFieldEmail"
-                              @input="validFieldEmail"
-                              aria-describedby="input-email input-feedback-email"
-                ></b-form-input>
-                <b-form-invalid-feedback id="input-feedback-email">
-                  Campo obrigatório, preencha por favor.
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </div>
-          </b-col>
-          <b-col sm="6" style="margin-bottom: 10px">
-            <div class="info-user">
-              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label-class="font-weight-bold" label="Sexo:*" label-for="gender" style="margin-bottom: 0px">
-                <b-form-select id="gender" v-model="form.user.gender" :options="genderOptions" size="sm" :state="valid_gender"
-                               @change="validFieldGender" :disabled="disabled_form_edit_user"
-                               aria-describedby="input-gender input-feedback-gender"
-                ></b-form-select>
-                <b-form-invalid-feedback id="input-gender">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
-              </b-form-group>
-            </div>
-          </b-col>
-          <b-col sm="6" style="margin-bottom: 10px">
-            <div class="info-user">
-              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Data nasc.:*" label-class="font-weight-bold" label-for="date_birth" style="margin-bottom: 0px">
-                <b-form-datepicker id="date_birth" placeholder="Selecione" dark
-                                   :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                                   :max="minimum_age_allowed" size="sm"
-                                   :state="valid_date_birth" :disabled="disabled_form_edit_user"
-                                   @blur="validFieldDateBirth"
-                                   @input="validFieldDateBirth"
-                                   aria-describedby="input-date-birth input-feedback-date-birth"
-                                   locale="pt-BR" v-model="form.user.date_birth"></b-form-datepicker>
-                <b-form-invalid-feedback id="input-feedback-date-birth">Campo obrigatório, preencha por favor.</b-form-invalid-feedback>
-              </b-form-group>
-            </div>
-          </b-col>
-          <b-col sm="6">
-            <div class="info-user">
-              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Telefone - 1:*" label-class="font-weight-bold" label-for="phone_1" style="margin-bottom: 0px">
-                <b-form-input id="phone_1" size="sm" v-model="form.user.telephone_1" @blur="validFieldPhone1" @input="validFieldPhone1"
-                              :state="valid_phone_1" :disabled="disabled_form_edit_user" v-mask="['(##) ####-####', '(##) # ####-####']"
-                              aria-describedby="input-phone-1 input-feedback-phone-1"
-                ></b-form-input>
-                <b-form-invalid-feedback id="input-feedback-phone-1">Campo obrigatório, preencha por favor</b-form-invalid-feedback>
-              </b-form-group>
-            </div>
-          </b-col>
-          <b-col sm="6">
-            <div class="info-user">
-              <b-form-group label-cols="2" label-cols-lg="2" label-size="sm" label="Telefone - 2:" label-class="font-weight-bold" label-for="phone_2" style="margin-bottom: 0px">
-                <b-form-input id="phone_2" size="sm" v-mask="['(##) ####-####', '(##) # ####-####']" v-model="form.user.telephone_2" :disabled="disabled_form_edit_user" type="tel"></b-form-input>
-              </b-form-group>
+          <b-col sm="2">
+            <b-form-file v-model="picture" accept=".jpeg, .jpg, .png, .svg" id="picture" class="mt-3" v-show="false" plain></b-form-file>
+            <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; padding: 0px">
+              <div class="profile_picture_configs" @mouseover="showConfigPicture(true)" @mouseleave="showConfigPicture(false)">
+                <div class="d-flex h-50 w-100 justify-content-end align-items-end" v-if="showPicture">
+                  <div class="d-flex w-100 justify-content-center align-items-center" style="margin-bottom: 5px">
+                    <b-button size="sm" variant="outline-light" class="w-75" @click="selectedPicture" v-if="picture == null">
+                      <b-icon icon="pencil-square" aria-hidden="true"></b-icon> Alterar
+                    </b-button>
+                    <b-button size="sm" variant="outline-primary" class="w-75" @click="changePicture" v-else>
+                      <b-icon icon="upload" aria-hidden="true"></b-icon> Salvar
+                    </b-button>
+                  </div>
+                </div>
+                <div class="d-flex h-50 w-100 justify-content-end align-items-start" v-if="showPicture">
+                  <div class="d-flex w-100 justify-content-center align-items-center" style="margin-top: 5px">
+                    <b-button size="sm" variant="outline-danger" class="w-75" v-if="picture == null && profile_actually != null && profile_actually != ''" @click="showConfirmationDeletePicture">
+                      <b-icon icon="trash" aria-hidden="true"></b-icon> Apagar
+                    </b-button>
+                    <b-button size="sm" variant="outline-danger" class="w-75" @click="picture = null" v-else-if="picture != null">
+                      <b-icon icon="x-circle" aria-hidden="true"></b-icon> Cancelar
+                    </b-button>
+                  </div>
+                </div>
+              </div>
+              <img id="show_picture" :src="`${urlProfilePicture}/profile_picture_default.jpg`" class="profile_picture"/>
             </div>
           </b-col>
         </b-row>
@@ -230,14 +263,19 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { update, getDataUser } from "../../../services/user/Authentication";
+  import { baseProfilePicture } from "../../../constants";
+  import { update, getDataUser, uploadProfilePicture, deleteProfilePicture } from "../../../services/user/Authentication";
   import { updateAddress } from "../../../services/user/Address"
   import Messages from "../../../components/Messages";
+  import Confirmation from "../../../components/Confirmation";
 
   export default {
     name: "Index",
     data: () => ({
+      urlProfilePicture: baseProfilePicture,
+      showPicture: false,
       user_has_address: null,
+      picture: null,
       show: false,
       msg: '',
       title_msg: '',
@@ -284,18 +322,184 @@
         { value: null, text: 'Por favor, selecione.' },
         { value: 'M', text: 'Masculino' },
         { value: 'F', text: 'Feminino' },
-      ]
+      ],
+      confirm:{
+        id: 'confirmation-delete-picture',
+        show: true,
+        body: '',
+        header:{
+          title: '',
+          close_header_action: () => {}
+        },
+        footer: {
+          ok: true,
+          ok_title: 'Confirmar',
+          ok_action: () => {},
+          cancel: true,
+          cancel_title: 'Cancelar',
+          cancel_action: () => {}
+        },
+      }
     }),
     components:{
-      "message-alert": Messages
+      "message-alert": Messages,
+      "confirmation": Confirmation
     },
     computed: {
       ...mapState('authentication',  [ 'session', 'alert' ]),
+      profile_actually: function (){
+        return this.user_data.data.photo;
+      }
+    },
+    watch:{
+      picture: function (val){
+        let img = document.getElementById('show_picture')
+        if(val != null){
+          let f = new FileReader();
+          f.onload = function(e){
+            img.src = e.target.result;
+          }
+          f.readAsDataURL(val);
+        }else{
+          if(this.profile_actually != null){
+            img.src = `${this.urlProfilePicture}/${this.user_data.data.photo}`
+          }else{
+            img.src = `${this.urlProfilePicture}/profile_picture_default.jpg`
+          }
+        }
+      },
+      profile_actually: function (val){
+        let img = document.getElementById('show_picture')
+        if(val != null){
+          img.src = `${this.urlProfilePicture}/${val}`
+        }else{
+          img.src = `${this.urlProfilePicture}/profile_picture_default.jpg`
+        }
+      }
     },
     created() {
       this.getUser()
     },
     methods:{
+      showConfirmationDeletePicture(){
+        this.confirm.header.title = 'Apagar foto de perfil'
+        this.confirm.body = 'Ao apagar a foto, não será possvível resgatar a mesma.<br/> Tem certeza de que deseja apagar sua atual foto de perfil?'
+        this.confirm.header.close_header_action = () => {
+          this.$bvModal.hide('confirmation-delete-picture')
+        }
+        this.confirm.footer.ok_action = () => {
+          this.$bvModal.hide('confirmation-delete-picture')
+          this.deletePicture()
+        }
+        this.confirm.footer.cancel_action = () => {
+          this.$bvModal.hide('confirmation-delete-picture')
+        }
+        this.$bvModal.show('confirmation-delete-picture')
+      },
+      deletePicture(){
+        deleteProfilePicture(this.session.user.id, this.session.config)
+        .then(res => {
+          if(res.data.status){
+            this.user_data.data.photo = null
+            this.$store.commit('authentication/SET_PROFILE_PICTURE', "profile_picture_default.jpg")
+            this.$store.commit('authentication/SET_ALERT', {
+              id: 'success_delete_picture_profile',
+              type: 'success',
+              message: 'Foto de perfil apagada com sucesso!',
+              body_variant: 'success',
+              text_variant: 'light',
+              show: true,
+              blocked: false,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          }else{
+            this.$store.commit('authentication/SET_ALERT', {
+              id: 'error_delete_picture_profile',
+              type: 'error',
+              message: 'Ocorreu um erro ao tentar apagar sua foto de perfil, por favor tente novamente.',
+              body_variant: 'danger',
+              text_variant: 'light',
+              show: true,
+              blocked: false,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          }
+        }).catch(() => {
+          this.$store.commit('authentication/SET_ALERT', {
+            id: 'error_delete_picture_profile',
+            type: 'error',
+            message: 'Ocorreu um erro ao tentar apagar sua foto de perfil, por favor tente novamente.',
+            body_variant: 'danger',
+            text_variant: 'light',
+            show: true,
+            blocked: false,
+            redirect: false,
+            path: '',
+            time: 5000
+          })
+        })
+      },
+      changePicture(){
+        let formData = new FormData();
+        formData.append('filename', this.picture)
+        uploadProfilePicture(this.session.user.id, formData, this.session.config)
+        .then(res => {
+          if(res.data.status){
+            this.user_data.data.photo = res.data.data
+            this.$store.commit('authentication/SET_PROFILE_PICTURE', res.data.data)
+            this.picture = null
+            this.$store.commit('authentication/SET_ALERT', {
+              id: 'success_update_picture_profile',
+              type: 'success',
+              message: 'Foto de perfil atualizada com sucesso!',
+              body_variant: 'success',
+              text_variant: 'light',
+              show: true,
+              blocked: false,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          }else{
+            this.$store.commit('authentication/SET_ALERT', {
+              id: 'error_update_picture_profile',
+              type: 'error',
+              message: 'Ocorreu um erro ao tentar atualizar sua foto de perfil, por favor tente novamente.',
+              body_variant: 'danger',
+              text_variant: 'light',
+              show: true,
+              blocked: false,
+              redirect: false,
+              path: '',
+              time: 5000
+            })
+          }
+        })
+        .catch(() => {
+          this.$store.commit('authentication/SET_ALERT', {
+            id: 'error_update_picture_profile',
+            type: 'error',
+            message: 'Ocorreu um erro ao tentar atualizar sua foto de perfil, por favor tente novamente.',
+            body_variant: 'danger',
+            text_variant: 'light',
+            show: true,
+            blocked: false,
+            redirect: false,
+            path: '',
+            time: 5000
+          })
+        })
+      },
+      selectedPicture(){
+        document.getElementById('picture').click()
+      },
+      showConfigPicture(bool){
+        this.showPicture = bool
+      },
       getUser(){
         let body = {
           id: this.session.user.id,
@@ -304,6 +508,7 @@
         getDataUser(body)
         .then(res => {
           this.$store.commit('authentication/SET_USER', res.data.user.name)
+          this.$store.commit('authentication/SET_PROFILE_PICTURE', res.data.user.photo)
           this.setDataInFields(res.data.user, res.data.address)
           this.user_data.data = res.data.user
           this.user_data.address = res.data.address
@@ -557,5 +762,24 @@
   .hr-vertical{
     cursor: default;
     margin: 0px 10px 8px 10px;
+  }
+  .profile_picture{
+    width: 150px;
+    height: 160px;
+    border: none;
+    border-radius: 0.25rem;
+  }
+  .profile_picture_configs{
+    width: 150px;
+    height: 160px;
+    cursor: pointer;
+    border: none;
+    border-radius: 0.25rem;
+    z-index: 999;
+    position: absolute;
+    background: rgba(0,0,0,.0);
+  }
+  .profile_picture_configs:hover{
+    background: rgba(0,0,0,.8);
   }
 </style>

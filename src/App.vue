@@ -15,6 +15,9 @@
     height: 100%;
     overflow-x: hidden;
   }
+  .card{
+    background-color: transparent !important;
+  }
   .dropdown-item.active, .dropdown-item:active {
     color: #fff;
     text-decoration: none;

@@ -11,8 +11,8 @@
           <template #button-content>
             <b-avatar variant="dark" :src="`${baseUrlPicture}/${picture_current_user}`" class="mr-3"></b-avatar> <span style="margin-left: 5px;">{{ formatName(user) }}</span>
           </template>
-          <b-dropdown-item href="#">Configurações</b-dropdown-item>
           <b-dropdown-item to="/minha-conta">Minha conta</b-dropdown-item>
+          <b-dropdown-item href="#">Meus leilões</b-dropdown-item>
           <b-dropdown-item href="#" @click="logout()">Sair</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
